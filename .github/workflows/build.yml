@@ -1,0 +1,37 @@
+name: Build BellPad IPA
+
+on:
+  workflow_dispatch: # Permite que você clique em um botão para iniciar manualmente pelo celular
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive # Baixa o código do jogo que fica oculto em subpastas
+
+      - name: Select Xcode Version
+        run: |
+          # Ativa o compilador oficial de iOS da Apple no servidor do GitHub
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Install Dependencies
+        run: |
+          brew install cmake ninja ripgrep sdl2
+
+      - name: Run BellPad Build
+        run: |
+          # Executa o script oficial do repositório para compilar o app para iPhone/iPad
+          chmod +x ./scripts/build-aurora-game-ios-simulator.sh
+          ./scripts/build-aurora-game-ios-simulator.sh
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BellPad-iOS-App
+          path: |
+            **/*.app
+            **/*.ipa
