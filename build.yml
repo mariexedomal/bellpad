@@ -1,0 +1,31 @@
+name: Build BellPad IPA
+
+on:
+  workflow_dispatch: # Permite que você clique em um botão para iniciar manualmente
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Dependencies
+        run: |
+          brew install cmake ninja ripgrep sdl2
+
+      - name: Run PadMint Build
+        run: |
+          # Executa o script do PadMint integrado para compilar o app em modo Release
+          ./PadMint --platform ios --config release
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BellPad-iOS-IPA
+          path: |
+            build/**/*.ipa
+            downloads/**/*.ipa
